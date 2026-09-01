@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jass-Wochenende Grindelwald 2026</title>
+<style>
+  :root {
+    --red: #e94057;
+    --darkred: #b31217;
+    --blue: #1e5799;
+    --lightblue: #2989d8;
+    --green: #2c7a3f;
+    --lightgreen: #56ab2f;
+    --cream: #faf9f6;
+    --gold: #f0b429;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #2b2b2b;
+    background: #f4f2ee;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; background: white; box-shadow: 0 0 30px rgba(0,0,0,0.08); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #ff9a44 0%, #ff6f61 30%, #e94057 55%, #8a2387 100%);
+    color: white;
+    text-align: center;
+    padding: 50px 20px 40px 20px;
+  }
+  .hero svg { width: 90px; height: 65px; margin-bottom: 10px; }
+  .hero h1 { font-size: 32px; margin: 6px 0; text-shadow: 1px 1px 4px rgba(0,0,0,0.3); }
+  .hero .sub { font-size: 16px; opacity: 0.95; margin-bottom: 18px; }
+  .hero .pillrow { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+  .hero .pill { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 6px 14px; font-size: 13px; }
+  .hero .names { font-size: 15px; margin-top: 10px; }
+  .hero .names span { display: inline-block; background: rgba(255,255,255,0.22); padding: 5px 14px; border-radius: 16px; margin: 3px; }
+
+  /* NAV */
+  .nav {
+    display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;
+    padding: 14px 10px; background: #fff; border-bottom: 1px solid #eee;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .nav a {
+    text-decoration: none; font-size: 13px; font-weight: 600; color: #555;
+    background: #f2f2f2; padding: 7px 14px; border-radius: 16px;
+  }
+  .nav a:hover { background: #e94057; color: white; }
+
+  /* SECTION */
+  .section { padding: 30px 24px; }
+  .day-header {
+    border-radius: 16px; padding: 18px 22px; color: white;
+    display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .day-header .icon-circle {
+    width: 56px; height: 56px; background: rgba(255,255,255,0.25); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .day-header .icon-circle svg { width: 34px; height: 34px; }
+  .day-header h2 { margin: 0; font-size: 21px; }
+  .day-header p { margin: 2px 0 0 0; font-size: 13px; opacity: 0.95; }
+
+  .friday { background: linear-gradient(120deg, #b31217 0%, #7a1219 100%); }
+  .saturday { background: linear-gradient(120deg, #1e5799 0%, #2989d8 50%, #7db9e8 100%); }
+  .sunday { background: linear-gradient(120deg, #2c7a3f 0%, #56ab2f 100%); }
+
+  .timeline { margin-left: 8px; border-left: 3px dashed #ccc; padding-left: 20px; }
+  .item { position: relative; margin-bottom: 12px; padding: 10px 14px; background: var(--cream); border-radius: 10px; border: 1px solid #eee; }
+  .item::before {
+    content: ""; position: absolute; left: -26px; top: 14px; width: 13px; height: 13px;
+    border-radius: 50%; background: var(--red); border: 3px solid white; box-shadow: 0 0 0 2px var(--red);
+  }
+  .saturday-block .item::before { background: var(--blue); box-shadow: 0 0 0 2px var(--blue); }
+  .sunday-block .item::before { background: var(--green); box-shadow: 0 0 0 2px var(--green); }
+  .item .time { font-weight: 700; color: var(--darkred); font-size: 14px; margin-right: 6px; }
+  .saturday-block .item .time { color: var(--blue); }
+  .sunday-block .item .time { color: var(--green); }
+  .item .desc { font-size: 14px; line-height: 1.4; }
+  .tag { display: inline-block; font-size: 10.5px; background: #ffe8b3; color: #7a5200; border-radius: 10px; padding: 2px 8px; margin-left: 6px; font-weight: 600; }
+
+  .infobox { margin-top: 16px; background: #fff6e5; border: 2px dashed var(--gold); border-radius: 14px; padding: 14px 18px; font-size: 13.5px; }
+  .infobox b { color: #b8860b; }
+
+  .altbox {
+    margin-top: 16px; background: #eef6ff; border: 2px dashed var(--blue); border-radius: 14px; padding: 16px 18px; font-size: 13.5px;
+  }
+  .altbox h3 { margin: 0 0 8px 0; font-size: 15px; color: var(--blue); }
+  .altbox .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .altbox .facts span { background: white; border: 1px solid #bcd8f5; border-radius: 12px; padding: 4px 10px; font-size: 12px; color: #1e5799; }
+
+  .ticket-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .ticket-strip .pill { background: white; border: 2px solid var(--red); color: var(--darkred); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; }
+
+  .funny-note { font-style: italic; color: #777; font-size: 12px; margin-top: 6px; }
+
+  /* LINKS SECTION */
+  .linkgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .linkgrid { grid-template-columns: 1fr; } }
+  .linkcard {
+    display: block; text-decoration: none; background: white; border: 1px solid #e5e5e5; border-radius: 12px;
+    padding: 14px 16px; transition: box-shadow 0.15s;
+  }
+  .linkcard:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+  .linkcard .lctitle { font-weight: 700; font-size: 14px; color: #2b2b2b; margin-bottom: 4px; }
+  .linkcard .lcdesc { font-size: 12.5px; color: #777; }
+  .linkcard .lcicon { font-size: 20px; margin-right: 6px; }
+
+  .footer {
+    text-align: center; padding: 28px 20px; background: #2b2b2b; color: #ccc; font-size: 12.5px;
+  }
+  .footer b { color: white; }
+
+  .section-title { font-size: 14px; font-weight: 700; color: #555; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; }
+
+  .photo { width: 100%; height: auto; border-radius: 12px; margin-bottom: 4px; display: block; }
+  .photo-credit { font-size: 10.5px; color: #999; margin-bottom: 16px; }
+
+  .altbox2 {
+    margin-top: 12px; background: #f3fbf0; border: 2px dashed var(--lightgreen); border-radius: 14px; padding: 14px 18px; font-size: 13.5px;
+  }
+  .altbox2 h3 { margin: 0 0 6px 0; font-size: 14.5px; color: var(--green); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero" id="top">
+    <svg viewBox="0 0 140 100">
+      <polygon points="10,90 40,30 60,60 80,15 110,90" fill="#ffffff" opacity="0.9"/>
+      <polygon points="10,90 40,30 55,55 30,90" fill="#ffe8e8" opacity="0.6"/>
+      <circle cx="115" cy="20" r="10" fill="#ffe082"/>
+    </svg>
+    <h1>Jass-Wochenende Grindelwald</h1>
+    <div class="sub">4. – 6. September 2026</div>
+    <div class="pillrow">
+      <span class="pill">🚂 Salon Rouge</span>
+      <span class="pill">⛰️ Jungfraujoch</span>
+      <span class="pill">🥾 Eiger Trail</span>
+      <span class="pill">🃏 Jassen</span>
+    </div>
+    <div class="names">
+      <span>Robi 🎩</span><span>Roger 🃏</span><span>Pius 🍻</span><span>Reto 🎲</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <a href="#freitag">Freitag</a>
+    <a href="#samstag">Samstag</a>
+    <a href="#sonntag">Sonntag</a>
+    <a href="#links">Links &amp; Hintergrund</a>
+  </div>
+
+  <!-- FREITAG -->
+  <div class="section" id="freitag">
+    <div class="day-header friday">
+      <div class="icon-circle">
+        <svg viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="26" width="40" height="20" rx="4" fill="#fff"/>
+          <circle cx="18" cy="48" r="5" fill="#fff"/>
+          <circle cx="38" cy="48" r="5" fill="#fff"/>
+          <rect x="46" y="18" width="10" height="16" rx="2" fill="#fff"/>
+          <circle cx="51" cy="14" r="4" fill="#fff" opacity="0.8"/>
+        </svg>
+      </div>
+      <div>
+        <h2>Freitag, 4. September — Anreise &amp; Salon Rouge</h2>
+        <p>Dampfzug-Genuss auf dem Brienzer Rothorn 🍽️🚂</p>
+      </div>
+    </div>
+
+    <img class="photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/5938_-_Brienz_-_Brienz_Rothorn_Bahn.JPG?width=900" alt="Brienz Rothorn Bahn Dampflok">
+    <div class="photo-credit">Foto: Wikimedia Commons, CC BY-SA 2.5 (Thisisbossi)</div>
+
+    <div class="timeline">
+      <div class="item"><span class="time">06:08</span><span class="desc">Ab Neerach, Post — Bus B515 Richtung Bülach Bahnhof</span></div>
+      <div class="item"><span class="time">06:08–09:53</span><span class="desc">Zugreise via Bülach nach Brienz (3h45, 1. Klasse — Tickets bereits von Reto gekauft) 🎟️</span></div>
+      <div class="item"><span class="time">09:53</span><span class="desc">Ankunft Brienz — Bahnhof BRB liegt direkt gegenüber</span></div>
+      <div class="item"><span class="time">10:15</span><span class="desc">Treffpunkt Rampe Depot BRB, Begrüssung &amp; Einblick Werkstatt <span class="tag">Highlight</span></span></div>
+      <div class="item"><span class="time">10:45</span><span class="desc">Abfahrt mit historischer Dampflok &amp; Salon Rouge — 11-Gänge-Erlebnis beginnt! 🥂</span></div>
+      <div class="item"><span class="time">12:15</span><span class="desc">Ankunft Rothorn Kulm (2244 m ü. M.) — Aussicht auf 693 Gipfel</span></div>
+      <div class="item"><span class="time">12:45</span><span class="desc">Rückfahrt ab Kulm, weiter geniessen</span></div>
+      <div class="item"><span class="time">14:35</span><span class="desc">Ankunft zurück in Brienz — Bäuche voll, Herzen glücklich</span></div>
+      <div class="item"><span class="time">ca. 15:00–16:00</span><span class="desc">Zug Brienz–Interlaken Ost–Burglauenen</span></div>
+      <div class="item"><span class="time">Abend</span><span class="desc">Feines Znacht in Grindelwald &amp; erste Jassrunde 🃏</span></div>
+    </div>
+
+    <div class="infobox">
+      <b>🎟️ Tickets Salon Rouge (Auftrag 146847):</b>
+      <div class="ticket-strip">
+        <span class="pill">Robert Görtz</span>
+        <span class="pill">Roger Strebel</span>
+        <span class="pill">Reto Zimmermann</span>
+        <span class="pill">Pius Meier</span>
+      </div>
+      <div class="funny-note">Je CHF 275.– — teurer als jedes Jass-Blatt, aber garantiert ohne Bock und Stöck 😄</div>
+    </div>
+  </div>
+
+  <!-- SAMSTAG -->
+  <div class="section" id="samstag" style="background:#fafcff;">
+    <div class="day-header saturday">
+      <div class="icon-circle">
+        <svg viewBox="0 0 64 64" fill="none">
+          <polygon points="4,52 20,20 30,38 42,10 60,52" fill="#fff"/>
+          <circle cx="44" cy="14" r="5" fill="#ffe082"/>
+        </svg>
+      </div>
+      <div>
+        <h2>Samstag, 5. September — Top of Europe</h2>
+        <p>Jungfraujoch, ganz ohne Auto ⛰️❄️</p>
+      </div>
+    </div>
+
+    <img class="photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/5113_-_Jungfraujoch_-_Sphinx_Observatory.JPG?width=900" alt="Jungfraujoch Sphinx Observatorium">
+    <div class="photo-credit">Foto: Wikimedia Commons, CC BY-SA 2.5 (Thisisbossi)</div>
+
+    <div class="timeline saturday-block">
+      <div class="item"><span class="time">ca. 08:00</span><span class="desc">Zug Burglauenen–Grindelwald Terminal (ca. 7 Min.)</span></div>
+      <div class="item"><span class="time">08:30</span><span class="desc">Eiger Express hoch nach Eigergletscher — modernste Kabinenbahn Europas 🚡</span></div>
+      <div class="item"><span class="time">08:50</span><span class="desc">Umsteigen Jungfraubahn Richtung Jungfraujoch</span></div>
+      <div class="item"><span class="time">09:30</span><span class="desc">Ankunft Jungfraujoch (3454 m) — Sphinx, Eispalast, Gänsehaut <span class="tag">Highlight</span></span></div>
+      <div class="item"><span class="time">12:00</span><span class="desc">Mittagessen oben — Aussicht inklusive 🍽️</span></div>
+      <div class="item"><span class="time">13:30</span><span class="desc">Rückfahrt Richtung Eigergletscher</span></div>
+      <div class="item"><span class="time">14:15</span><span class="desc">Ankunft Eigergletscher — hier startet die Alternative unten 👇</span></div>
+    </div>
+
+    <div class="altbox">
+      <h3>🥾 Option A: Eiger Trail — Eigergletscher → Alpiglen (wandern)</h3>
+      <img class="photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Eiger_Nordwand,_M%C3%B6nch.JPG?width=800" alt="Eiger Nordwand">
+      <div class="photo-credit">Foto: Wikimedia Commons, CC BY-SA (Johannes D.)</div>
+      <p style="margin:0 0 8px 0;">
+        Statt direkt zurück nach Grindelwald zu fahren, könnt ihr ab der Station Eigergletscher zu Fuss weiter:
+        Der Weg führt direkt am Fuss der berühmten Eiger-Nordwand entlang, vorbei an Geröllfeldern und Blumenwiesen,
+        mit Blick auf Kleine Scheidegg, Lauberhorn und den türkisblauen Speichersee. Am Schluss geht's im Zickzack
+        runter zur Bahnstation Alpiglen, wo die Bahn zurück nach Grindelwald wartet — oder eine Pause im Berghaus Alpiglen lockt.
+      </p>
+      <div class="facts">
+        <span>📏 ca. 6 km</span>
+        <span>⏱️ ca. 2 h</span>
+        <span>📉 2322 m → 1616 m</span>
+        <span>🥾 T2, leicht</span>
+        <span>👨‍👩‍👧 familientauglich</span>
+      </div>
+      <p style="margin:8px 0 0 0; font-size:13px;">
+        Zeitlich easy machbar: Start Eigergletscher ca. 14:15, Ankunft Alpiglen ca. 16:15, dann Zug zurück nach Grindelwald/Burglauenen.
+      </p>
+    </div>
+
+    <div class="altbox2">
+      <h3>🚡 Option B: First Cliff Walk (ohne Wandern)</h3>
+      <p style="margin:0 0 8px 0;">
+        Wer die Füsse schonen will: Mit der Gondel von Grindelwald direkt auf First (2168 m), dort der spektakuläre
+        Hängesteg an der Felswand entlang bis zur Aussichtsplattform, die 45 m ins Leere ragt. Praktisch kein
+        Fussmarsch nötig, dafür Nervenkitzel und Traumblick auf Eiger, Mönch und Wetterhorn. Anschliessend gemütlich
+        im Bergrestaurant einkehren.
+      </p>
+      <div class="facts">
+        <span>🚡 Gondel ab Grindelwald, ca. 25 Min.</span>
+        <span>🚶 kaum Fussweg</span>
+        <span>🍽️ Bergrestaurant vorhanden</span>
+      </div>
+    </div>
+
+    <div class="altbox2">
+      <h3>😌 Option C: Direkt zurück &amp; entspannen</h3>
+      <p style="margin:0;">
+        Ganz ohne Zusatzprogramm: Nach dem Jungfraujoch direkt zurück nach Grindelwald/Burglauenen, Füsse hoch,
+        gemütlich Jassen oder ein Bummel durchs Dorf — auch das ist ein völlig legitimer Samstagnachmittag.
+      </p>
+    </div>
+
+    <div class="infobox" style="margin-top:14px;">
+      <b>❄️ Wichtig:</b> Sitzplatzreservation für die Jungfraubahn ist von Mai–Oktober 2026 Pflicht — Reto kümmert sich darum. Warme Jacke einpacken, auch im September kann's oben frisch sein!
+    </div>
+  </div>
+
+  <!-- SONNTAG -->
+  <div class="section" id="sonntag">
+    <div class="day-header sunday">
+      <div class="icon-circle">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M10 40 Q 20 20 30 40 T 50 40" stroke="#fff" stroke-width="4" fill="none"/>
+          <circle cx="32" cy="20" r="8" fill="#ffe082"/>
+        </svg>
+      </div>
+      <div>
+        <h2>Sonntag, 6. September — Ausbambeln &amp; Heimreise</h2>
+        <p>Frei nach Lust der Jungs 🌿🚂</p>
+      </div>
+    </div>
+
+    <div class="timeline sunday-block">
+      <div class="item"><span class="time">Vormittag</span><span class="desc">Gemütliches Frühstück, danach frei nach Wunsch — drei Ideen unten 👇</span></div>
+      <div class="item"><span class="time">bis 11:00</span><span class="desc">Check-out Brüggstock</span></div>
+      <div class="item"><span class="time">ca. 11:15</span><span class="desc">Zug Burglauenen–Interlaken Ost</span></div>
+      <div class="item"><span class="time">ca. 12:00</span><span class="desc">Weiter Interlaken Ost–Zürich HB (ca. 1h50)</span></div>
+      <div class="item"><span class="time">ca. 13:50</span><span class="desc">Umsteigen Zürich HB–Bülach–Neerach</span></div>
+      <div class="item"><span class="time">ca. 14:15</span><span class="desc">Ankunft daheim — Wochenende geschafft! 🎉</span></div>
+    </div>
+
+    <div class="altbox2">
+      <h3>🌊 Option A: Trümmelbachfälle</h3>
+      <p style="margin:0;">
+        Zehn Gletscherwasserfälle mitten im Felsen, über Galerien und Tunnel begehbar — spektakulär und in
+        ca. 30 Min. ab Grindelwald via Lauterbrunnen–Stechelberg erreichbar. Täglich 9:00–17:00 geöffnet.
+      </p>
+    </div>
+
+    <div class="altbox2">
+      <h3>🚡 Option B: First Cliff Walk</h3>
+      <p style="margin:0;">
+        Falls am Samstag nicht gemacht: der Hängesteg an der Felswand von First, kaum Fussweg, dafür Nervenkitzel
+        und Panorama satt. Gondel direkt ab Grindelwald.
+      </p>
+    </div>
+
+    <div class="altbox2">
+      <h3>⛴️ Option C: Bootsfahrt auf dem Brienzersee</h3>
+      <p style="margin:0;">
+        Entspannte Rundfahrt auf dem türkisblauen See, vorbei an den Giessbachfällen — schönes ruhiges Ausklingen
+        vor der Heimreise, ab Brienz oder Interlaken.
+      </p>
+    </div>
+
+    <div class="infobox">
+      <b>💡 Tipp:</b> Genaue Abfahrtszeiten kurz vorher im SBB-Fahrplan (sbb.ch) checken, da Anschlüsse variieren können.
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="section" id="links" style="background:#fafafa;">
+    <div class="section-title">📍 Orte zum Weiterschicken</div>
+    <div class="linkgrid">
+      <a class="linkcard" href="https://www.google.com/maps?q=46.63591,7.97533" target="_blank">
+        <div class="lctitle">🏡 Unterkunft Brüggstock</div>
+        <div class="lcdesc">Grindelwaldstrasse 16, bei Bahnhof Burglauenen — Google Maps</div>
+      </a>
+      <a class="linkcard" href="https://www.google.com/maps/search/?api=1&query=Brienz+Rothorn+Bahn,+Brienz,+BE&query_place_id=ChIJx9RGhDGUj0cRf2QOTQKncxE" target="_blank">
+        <div class="lctitle">🚂 Brienz Rothorn Bahn</div>
+        <div class="lcdesc">Depot &amp; Bahnhof, Hauptstrasse 149, Brienz — Google Maps</div>
+      </a>
+    </div>
+
+    <div class="section-title" style="margin-top:26px;">📖 Hintergrund &amp; Videos</div>
+    <div class="linkgrid">
+      <a class="linkcard" href="https://en.wikipedia.org/wiki/Brienz_Rothorn_Railway" target="_blank">
+        <div class="lctitle">📚 Brienz Rothorn Bahn</div>
+        <div class="lcdesc">Wikipedia — historische Dampfzahnradbahn, 7,6 km, bis 2244 m ü. M.</div>
+      </a>
+      <a class="linkcard" href="https://en.wikipedia.org/wiki/Jungfraujoch" target="_blank">
+        <div class="lctitle">📚 Jungfraujoch</div>
+        <div class="lcdesc">Wikipedia — 3454 m, höchstgelegener Bahnhof Europas</div>
+      </a>
+      <a class="linkcard" href="https://en.wikipedia.org/wiki/Sphinx_Observatory" target="_blank">
+        <div class="lctitle">📚 Sphinx Observatorium</div>
+        <div class="lcdesc">Wikipedia — Aussichtsplattform auf 3571 m</div>
+      </a>
+      <a class="linkcard" href="https://www.youtube.com/results?search_query=Brienz+Rothorn+Bahn+Dampflok" target="_blank">
+        <div class="lctitle">▶️ Brienz Rothorn Bahn</div>
+        <div class="lcdesc">YouTube-Suche — Dampflok in Aktion</div>
+      </a>
+      <a class="linkcard" href="https://www.youtube.com/results?search_query=Jungfraujoch+Top+of+Europe" target="_blank">
+        <div class="lctitle">▶️ Jungfraujoch</div>
+        <div class="lcdesc">YouTube-Suche — Top of Europe</div>
+      </a>
+      <a class="linkcard" href="https://www.youtube.com/results?search_query=Eiger+Trail+Eigergletscher+Alpiglen" target="_blank">
+        <div class="lctitle">▶️ Eiger Trail</div>
+        <div class="lcdesc">YouTube-Suche — Wanderung an der Nordwand</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Drei Tage, vier Kumpels, ein Dampfzug, ein Gletscher und mindestens hundert Jass-Runden. 🥂🃏🏔️<br>
+    Jass-Wochenende Grindelwald, 4.–6. September 2026
+  </div>
+
+</div>
+</body>
+</html>
