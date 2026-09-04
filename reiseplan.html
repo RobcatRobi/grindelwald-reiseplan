@@ -219,6 +219,43 @@
 
   .section-title { font-size: 14px; font-weight: 700; color: #555; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 1px; }
 
+  /* GALLERY */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 500px) { .gallery-grid { grid-template-columns: 1fr; } }
+  .gallery-item {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.8,.3,1);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+  .gallery-item.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .gallery-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4/3;
+    transition: transform 0.5s ease;
+  }
+  .gallery-item:hover img { transform: scale(1.06); }
+  .gallery-item .cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.72));
+    color: white; font-size: 12.5px; padding: 22px 12px 10px 12px;
+  }
+  .gallery-item.wide { grid-column: 1 / -1; }
+  .gallery-item.wide img { aspect-ratio: 16/8; }
+
   .photo { width: 100%; height: auto; border-radius: 12px; margin-bottom: 4px; display: block; }
   .photo-credit { font-size: 10.5px; color: #999; margin-bottom: 16px; }
 
@@ -255,7 +292,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔇 Ton an</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v1.9 · Aktualisiert: 04.09.2026 · 16:50</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.0 · Aktualisiert: 04.09.2026 · 17:20</div>
 
   <!-- NAV -->
   <div class="nav">
@@ -471,6 +508,21 @@
     </div>
   </div>
 
+  <!-- GALERIE -->
+  <div class="section" id="galerie" style="background:#fff;">
+    <div class="section-title">📸 Impressionen vom Freitag</div>
+    <div class="gallery-grid">
+      <div class="gallery-item wide"><img src="gallery/gallery-01.jpg" alt="Jolly Roger Bootstour"><div class="cap">Schwimmen unterm Bug der "Jolly Roger" 🚤</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-02.jpg" alt="Auf dem Boot"><div class="cap">Entspannte Fahrt auf dem Brienzersee</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-03.jpg" alt="Jolly Roger am Steg"><div class="cap">Die "Jolly Roger" wartet am Steg</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-04.jpg" alt="Robi entspannt auf dem Boot"><div class="cap">Volle Entspannung an Bord</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-05.jpg" alt="Auf dem Rothorn Kulm"><div class="cap">Oben am Rothorn Kulm — Blick auf den Brienzersee</div></div>
+      <div class="gallery-item wide"><img src="gallery/gallery-06.jpg" alt="Dampflok und Brienzersee"><div class="cap">Dampflok Nr. 5, Baujahr 1891 🚂</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-07.jpg" alt="Lokschild"><div class="cap">Société Suisse, Winterthur 1891 — Geschichte pur</div></div>
+      <div class="gallery-item"><img src="gallery/gallery-08.jpg" alt="Salon Rouge Wappen"><div class="cap">Salon Rouge — seit 1936</div></div>
+    </div>
+  </div>
+
   <!-- LINKS -->
   <div class="section" id="links" style="background:#fafafa;">
     <div class="section-title">📍 Orte zum Weiterschicken</div>
@@ -552,6 +604,17 @@
     soundBtn.textContent = soundOn ? '🔊 Ton aus' : '🔇 Ton an';
     if (soundOn) heroVideo.play().catch(() => {});
   });
+
+  // Gallery: fade-in items as they scroll into view
+  const galleryObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        galleryObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.gallery-item').forEach(el => galleryObserver.observe(el));
 </script>
 </body>
 </html>
