@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jass-Wochenende Grindelwald 2026</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7a1f1f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grindelwald">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
   :root {
     --red: #e94057;
@@ -329,7 +337,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔇 Ton an</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.4 · Aktualisiert: 06.09.2026 · 16:45</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.5 · Aktualisiert: 07.09.2026 · 16:10</div>
 
   <!-- NAV -->
   <div class="nav">
@@ -654,6 +662,13 @@
     });
   }, { threshold: 0.15 });
   document.querySelectorAll('.polaroid').forEach(el => polaroidObserver.observe(el));
+
+  // PWA: Service Worker registrieren, damit die Seite installierbar ist & offline funktioniert
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
 </script>
 </body>
 </html>
