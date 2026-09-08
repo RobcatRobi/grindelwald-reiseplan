@@ -373,6 +373,13 @@
     display:flex; align-items:center; gap:4px;
   }
   .video-badge::before { content:"▶"; font-size:9px; }
+  .vid-sound-btn {
+    position: absolute; bottom: 8px; right: 8px; z-index: 5;
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(0,0,0,0.6); color: #fff; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
 
   .photo { width: 100%; height: auto; border-radius: 12px; margin-bottom: 4px; display: block; }
   .photo-credit { font-size: 10.5px; color: #999; margin-bottom: 16px; }
@@ -410,7 +417,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔇 Ton an</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.2 · Aktualisiert: 08.09.2026 · 17:15</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.3 · Aktualisiert: 08.09.2026 · 17:40</div>
 
   <div class="joke-banner">
     🃏 Kleiner Insider-Fakt zum Schluss: Es war eine <b>Jassreise</b> — und dabei wurde <u>kein einziges Mal</u> gejasst! 😂 Dafür Salon Rouge, Jungfraujoch, Country Night und First Glider satt.
@@ -966,6 +973,22 @@
     });
   }, { threshold: 0.4 });
   document.querySelectorAll('.album-photo video').forEach(el => clipObserver.observe(el));
+
+  // Ton-Ein/Aus-Knopf für jedes einzelne Inline-Video
+  document.querySelectorAll('.album-photo .kb-frame video').forEach((vid) => {
+    const btn = document.createElement('button');
+    btn.className = 'vid-sound-btn';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Ton ein/aus');
+    btn.textContent = '🔇';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      vid.muted = !vid.muted;
+      btn.textContent = vid.muted ? '🔇' : '🔊';
+      if (!vid.muted) { vid.play().catch(() => {}); }
+    });
+    vid.parentElement.appendChild(btn);
+  });
 
   // PWA: Service Worker registrieren, damit die Seite installierbar ist & offline funktioniert
   if ('serviceWorker' in navigator) {
