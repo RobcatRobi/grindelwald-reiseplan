@@ -407,12 +407,12 @@
 <body>
 <iframe id="scMusic" width="1" height="1" style="position:fixed; top:-10px; left:-10px; opacity:0; pointer-events:none;"
   scrolling="no" frameborder="no" allow="autoplay"
-  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/275329644&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false&amp;buying=false&amp;liking=false&amp;download=false&amp;sharing=false"></iframe>
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/275329644&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false&amp;buying=false&amp;liking=false&amp;download=false&amp;sharing=false"></iframe>
 <div class="music-bar" id="musicBar">
-  <button id="mbPrev" aria-label="Voriges Lied">⏮</button>
+  <button id="mbPlay" aria-label="Musik starten/pausieren">▶️</button>
   <span class="mb-title" id="mbTitle">Vogellisi</span>
+  <button id="mbPrev" aria-label="Voriges Lied">⏮</button>
   <button id="mbNext" aria-label="Nächstes Lied">⏭</button>
-  <button id="mbMute" aria-label="Ton ein/aus">🔊</button>
 </div>
 <div class="wrap">
 
@@ -440,7 +440,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔊 Ton aus</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.8 · Aktualisiert: 08.09.2026 · 18:00</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.9 · Aktualisiert: 08.09.2026 · 18:25</div>
 
   <div class="joke-banner">
     🃏 Kleiner Insider-Fakt zum Schluss: Es war eine <b>Jassreise</b> — und dabei wurde <u>kein einziges Mal</u> gejasst! 😂 Dafür Salon Rouge, Jungfraujoch, Country Night und First Glider satt.
@@ -1045,19 +1045,19 @@
   }
 
   // Hintergrundmusik: drei Berner-Oberland-Volkslieder via offiziellem SoundCloud-Player
-  // Laut am Anfang, wird beim Scrollen leiser, weicht zurück sobald ein Video spielt (Video hat Priorität)
-  // Umschaltbar per Bedienleiste, inkl. Stummschaltung
+  // Startet NICHT von selbst (Browser blockieren das ohnehin unzuverlässig) — der Play-Knopf
+  // ist die eine verlässliche Quelle der Wahrheit für An/Aus, reagiert sofort bei Klick.
   (function initBackgroundMusic() {
     const scIframe = document.getElementById('scMusic');
     const mbTitle = document.getElementById('mbTitle');
-    const mbMute = document.getElementById('mbMute');
+    const mbPlay = document.getElementById('mbPlay');
     const playlist = [
       { name: 'Vogellisi', url: 'https://api.soundcloud.com/tracks/275329644' },
       { name: 'Lueget vo Bärg und Tal', url: 'https://soundcloud.com/simonwunderlin/lueget-vo-barg-und-tal' },
       { name: 'Dr Haslibärger', url: 'https://soundcloud.com/user-791150756/dr-haslibaerger' }
     ];
     let trackIndex = 0;
-    let scWidget = null, scReady = false, playingVideoCount = 0, userMuted = false;
+    let scWidget = null, scReady = false, playingVideoCount = 0, isPlaying = false, pendingPlay = false;
     const VOL_TOP = 100, VOL_BOTTOM = 30, VOL_DUCK = 12;
 
     function volumeForScroll() {
@@ -1067,18 +1067,19 @@
     }
     function applyVolume() {
       if (!scReady) return;
-      if (userMuted) { scWidget.setVolume(0); return; }
       scWidget.setVolume(playingVideoCount > 0 ? VOL_DUCK : volumeForScroll());
     }
+    function setPlayIcon() { mbPlay.textContent = isPlaying ? '⏸' : '▶️'; }
 
-    function loadTrack(i, autoplay) {
+    function loadTrack(i, autoplayAfter) {
       trackIndex = (i + playlist.length) % playlist.length;
       const t = playlist[trackIndex];
       mbTitle.textContent = t.name;
       scReady = false;
-      scWidget.load(t.url, { auto_play: autoplay !== false, callback: function () {
+      scWidget.load(t.url, { auto_play: false, callback: function () {
         scReady = true;
         applyVolume();
+        if (autoplayAfter) { scWidget.play(); }
       }});
     }
 
@@ -1087,8 +1088,10 @@
       scWidget.bind(SC.Widget.Events.READY, function () {
         scReady = true;
         applyVolume();
-        scWidget.play();
+        if (pendingPlay) { pendingPlay = false; scWidget.play(); }
       });
+      scWidget.bind(SC.Widget.Events.PLAY, function () { isPlaying = true; setPlayIcon(); });
+      scWidget.bind(SC.Widget.Events.PAUSE, function () { isPlaying = false; setPlayIcon(); });
       // Lied wiederholt sich in Dauerschleife, statt am Ende zu stoppen
       scWidget.bind(SC.Widget.Events.FINISH, function () {
         scWidget.seekTo(0);
@@ -1105,22 +1108,14 @@
       vid.addEventListener('ended', () => { playingVideoCount = Math.max(0, playingVideoCount - 1); applyVolume(); });
     });
 
-    // Bedienleiste: vor/zurück und Stummschaltung
-    document.getElementById('mbPrev').addEventListener('click', () => loadTrack(trackIndex - 1, true));
-    document.getElementById('mbNext').addEventListener('click', () => loadTrack(trackIndex + 1, true));
-    mbMute.addEventListener('click', () => {
-      userMuted = !userMuted;
-      mbMute.textContent = userMuted ? '🔇' : '🔊';
-      applyVolume();
-      if (!userMuted && scReady) scWidget.play();
+    // Play/Pause-Knopf: reagiert sofort und ist die einzige Quelle der Wahrheit
+    mbPlay.addEventListener('click', () => {
+      if (!scReady) { pendingPlay = !pendingPlay; setPlayIcon(); return; }
+      if (isPlaying) { scWidget.pause(); } else { scWidget.play(); }
     });
-
-    // Browser blockieren Autoplay mit Ton oft bis zur ersten Interaktion — dann nachholen
-    ['click', 'touchstart', 'scroll'].forEach((evt) => {
-      document.addEventListener(evt, () => { if (scReady && !userMuted) scWidget.play(); }, { once: true, passive: true });
-    });
+    document.getElementById('mbPrev').addEventListener('click', () => loadTrack(trackIndex - 1, isPlaying));
+    document.getElementById('mbNext').addEventListener('click', () => loadTrack(trackIndex + 1, isPlaying));
   })();
 </script>
 </body>
 </html>
-<!-- rebuild trigger 1788887070 -->
