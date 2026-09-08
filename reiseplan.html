@@ -75,9 +75,35 @@
   .day-header h2 { margin: 0; font-size: 21px; }
   .day-header p { margin: 2px 0 0 0; font-size: 13px; opacity: 0.95; }
 
-  .friday { background: linear-gradient(120deg, #b31217 0%, #7a1219 100%); }
-  .saturday { background: linear-gradient(120deg, #1e5799 0%, #2989d8 50%, #7db9e8 100%); }
-  .sunday { background: linear-gradient(120deg, #2c7a3f 0%, #56ab2f 100%); }
+  .friday { background: linear-gradient(120deg, #ff416c 0%, #b31217 60%, #7a1219 100%); }
+  .saturday { background: linear-gradient(120deg, #00c6ff 0%, #1e5799 55%, #2989d8 100%); }
+  .sunday { background: linear-gradient(120deg, #a8e063 0%, #2c7a3f 55%, #134e13 100%); }
+
+  .wave-divider { height: 46px; overflow: hidden; }
+  .wave-divider svg { width: 100%; height: 100%; display: block; }
+
+  .story-card {
+    display: flex; gap: 12px; align-items: center;
+    margin: 16px 0; padding: 12px; border-radius: 16px;
+    background: linear-gradient(135deg, #fff8f0, #fff);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .story-card.visible { opacity: 1; transform: translateY(0); }
+  .story-card img { width: 84px; height: 84px; object-fit: cover; border-radius: 12px; flex-shrink: 0; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+  .story-card .story-text { font-size: 13px; line-height: 1.4; color: #444; }
+  .story-card .story-text b { color: var(--darkred); }
+
+  .joke-banner {
+    margin: 14px 16px; padding: 16px 18px; border-radius: 18px;
+    background: linear-gradient(120deg, #ffd200, #f7971e, #ff6a88, #a86ee0);
+    background-size: 300% 300%;
+    animation: gradientshift 8s ease infinite;
+    color: white; text-align: center; font-size: 14px; font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  }
+  @keyframes gradientshift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
 
   .timeline { margin-left: 8px; border-left: 3px dashed #ccc; padding-left: 20px; }
   .item { position: relative; margin-bottom: 12px; padding: 10px 14px; background: var(--cream); border-radius: 10px; border: 1px solid #eee; }
@@ -337,7 +363,13 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔇 Ton an</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.6 · Aktualisiert: 08.09.2026 · 13:45</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.7 · Aktualisiert: 08.09.2026 · 14:20</div>
+
+  <div class="joke-banner">
+    🃏 Kleiner Insider-Fakt zum Schluss: Es war eine <b>Jassreise</b> — und dabei wurde <u>kein einziges Mal</u> gejasst! 😂 Dafür Salon Rouge, Jungfraujoch, Country Night und First Glider satt.
+  </div>
+
+  <div class="wave-divider"><svg viewBox="0 0 1200 46" preserveAspectRatio="none"><path d="M0,20 C200,50 400,0 600,20 C800,40 1000,0 1200,20 L1200,46 L0,46 Z" fill="#ff416c" opacity="0.85"/></svg></div>
 
   <!-- NAV -->
   <div class="nav">
@@ -378,6 +410,9 @@
       <div class="item"><span class="time">12:45</span><span class="desc">Rückfahrt ab Kulm, weiter geniessen</span></div>
       <div class="item"><span class="time">14:35</span><span class="desc">Ankunft zurück in Brienz — Bäuche voll, Herzen glücklich</span></div>
       <div class="item"><span class="time">ca. 15:00–17:00</span><span class="desc">🚤 Spontane Bootsmiete "Jolly Roger" ab Brienz — 2 Std. Pontonboot, Schwimmen im türkisen See <span class="tag">Highlight</span></span></div>
+    </div>
+    <div class="story-card"><img src="gallery/gallery-15.jpg" alt="Schwimmen im See"><div class="story-text">Mitten im türkisblauen Brienzersee schwimmend unterm Bug der <b>"Jolly Roger"</b> — spontaner als geplant, aber genau deshalb einer der schönsten Momente des Tages. 🏊</div></div>
+    <div class="timeline friday-block">
       <div class="item"><span class="time">17:40</span><span class="desc">⛴️ Kursschiff ab Brienz Richtung Interlaken Ost (ca. 1h15, CHF 39)</span></div>
       <div class="item"><span class="time">ca. 18:55</span><span class="desc">Ankunft Interlaken Ost — Einkauf fürs Frühstück bei Coop (direkt am Bahnhof, freitags bis 21:00 offen) 🛒</span></div>
       <div class="item"><span class="time">ca. 19:20</span><span class="desc">Zug Interlaken Ost–Burglauenen (ca. 35–40 Min.)</span></div>
@@ -422,6 +457,8 @@
     </div>
   </div>
 
+  <div class="wave-divider"><svg viewBox="0 0 1200 46" preserveAspectRatio="none"><path d="M0,20 C200,50 400,0 600,20 C800,40 1000,0 1200,20 L1200,46 L0,46 Z" fill="#00c6ff" opacity="0.85"/></svg></div>
+
   <!-- SAMSTAG -->
   <div class="section" id="samstag" style="background:#fafcff;">
     <div class="day-header saturday">
@@ -453,6 +490,7 @@
       <div class="item"><span class="time">danach</span><span class="desc">Gondel Männlichen–Grindelwald (ca. 20 Min.), weiter nach Burglauenen</span></div>
       <div class="item"><span class="time">Abend</span><span class="desc">🤠 <b>Country Night 2026</b> auf dem Eiger+ Nordwandplatz mitten in Grindelwald — Live on Stage: Bad Cat Kusi, Eric St. Michaels, Hot Rod Cowboys, Rosewood, Eric &amp; Rock Avengers. Country Bar mit Essen und Drinks. <span class="tag">Highlight</span></span></div>
     </div>
+    <div class="story-card"><img src="gallery/gallery-23.jpg" alt="Country Night Bühne"><div class="story-text">Zufällig genau am richtigen Abend in Grindelwald: <b>Country Night</b> mitten im Dorf, fünf Live-Bands, Cowboyhüte und beste Stimmung unter der Eiger-Nordwand. 🎸🤠</div></div>
 
     <div class="altbox">
       <h3>🤠 Spontan-Highlight: Country Night Grindelwald</h3>
@@ -471,6 +509,8 @@
       <b>❄️ Wichtig:</b> Sitzplatzreservation für die Jungfraubahn ist von Mai–Oktober 2026 Pflicht — Reto kümmert sich darum. Warme Jacke einpacken, auch im September kann's oben frisch sein!
     </div>
   </div>
+
+  <div class="wave-divider"><svg viewBox="0 0 1200 46" preserveAspectRatio="none"><path d="M0,20 C200,50 400,0 600,20 C800,40 1000,0 1200,20 L1200,46 L0,46 Z" fill="#2c7a3f" opacity="0.85"/></svg></div>
 
   <!-- SONNTAG -->
   <div class="section" id="sonntag">
@@ -662,6 +702,16 @@
     });
   }, { threshold: 0.15 });
   document.querySelectorAll('.polaroid').forEach(el => polaroidObserver.observe(el));
+
+  const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        storyObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.story-card').forEach(el => storyObserver.observe(el));
 
   // PWA: Service Worker registrieren, damit die Seite installierbar ist & offline funktioniert
   if ('serviceWorker' in navigator) {
