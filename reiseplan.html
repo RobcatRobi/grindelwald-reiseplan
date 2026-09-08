@@ -381,6 +381,20 @@
     cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
 
+  .music-bar {
+    position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+    z-index: 50; display: flex; align-items: center; gap: 6px;
+    background: rgba(20,10,10,0.78); backdrop-filter: blur(6px);
+    color: #fff; padding: 7px 10px; border-radius: 30px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35); font-size: 11.5px;
+    max-width: 90vw;
+  }
+  .music-bar button {
+    background: none; border: none; color: #fff; font-size: 14px;
+    cursor: pointer; padding: 2px 5px; -webkit-tap-highlight-color: transparent;
+  }
+  .music-bar .mb-title { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
   .photo { width: 100%; height: auto; border-radius: 12px; margin-bottom: 4px; display: block; }
   .photo-credit { font-size: 10.5px; color: #999; margin-bottom: 16px; }
 
@@ -394,6 +408,12 @@
 <iframe id="scMusic" width="1" height="1" style="position:fixed; top:-10px; left:-10px; opacity:0; pointer-events:none;"
   scrolling="no" frameborder="no" allow="autoplay"
   src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/275329644&amp;auto_play=true&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false&amp;buying=false&amp;liking=false&amp;download=false&amp;sharing=false"></iframe>
+<div class="music-bar" id="musicBar">
+  <button id="mbPrev" aria-label="Voriges Lied">⏮</button>
+  <span class="mb-title" id="mbTitle">Vogellisi</span>
+  <button id="mbNext" aria-label="Nächstes Lied">⏭</button>
+  <button id="mbMute" aria-label="Ton ein/aus">🔊</button>
+</div>
 <div class="wrap">
 
   <!-- HERO -->
@@ -420,7 +440,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔊 Ton aus</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.7 · Aktualisiert: 08.09.2026 · 17:15</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v3.8 · Aktualisiert: 08.09.2026 · 18:00</div>
 
   <div class="joke-banner">
     🃏 Kleiner Insider-Fakt zum Schluss: Es war eine <b>Jassreise</b> — und dabei wurde <u>kein einziges Mal</u> gejasst! 😂 Dafür Salon Rouge, Jungfraujoch, Country Night und First Glider satt.
@@ -1024,11 +1044,20 @@
     });
   }
 
-  // Hintergrundmusik: "Vogellisi (Berner Oberland Isch Schön)" via offiziellem SoundCloud-Player
+  // Hintergrundmusik: drei Berner-Oberland-Volkslieder via offiziellem SoundCloud-Player
   // Laut am Anfang, wird beim Scrollen leiser, weicht zurück sobald ein Video spielt (Video hat Priorität)
+  // Umschaltbar per Bedienleiste, inkl. Stummschaltung
   (function initBackgroundMusic() {
     const scIframe = document.getElementById('scMusic');
-    let scWidget = null, scReady = false, playingVideoCount = 0;
+    const mbTitle = document.getElementById('mbTitle');
+    const mbMute = document.getElementById('mbMute');
+    const playlist = [
+      { name: 'Vogellisi', url: 'https://api.soundcloud.com/tracks/275329644' },
+      { name: 'Lueget vo Bärg und Tal', url: 'https://soundcloud.com/simonwunderlin/lueget-vo-barg-und-tal' },
+      { name: 'Dr Haslibärger', url: 'https://soundcloud.com/user-791150756/dr-haslibaerger' }
+    ];
+    let trackIndex = 0;
+    let scWidget = null, scReady = false, playingVideoCount = 0, userMuted = false;
     const VOL_TOP = 100, VOL_BOTTOM = 30, VOL_DUCK = 12;
 
     function volumeForScroll() {
@@ -1038,20 +1067,27 @@
     }
     function applyVolume() {
       if (!scReady) return;
+      if (userMuted) { scWidget.setVolume(0); return; }
       scWidget.setVolume(playingVideoCount > 0 ? VOL_DUCK : volumeForScroll());
     }
 
-    function startMusic() {
-      if (!scReady) return;
-      scWidget.setVolume(VOL_TOP);
-      scWidget.play();
+    function loadTrack(i, autoplay) {
+      trackIndex = (i + playlist.length) % playlist.length;
+      const t = playlist[trackIndex];
+      mbTitle.textContent = t.name;
+      scReady = false;
+      scWidget.load(t.url, { auto_play: autoplay !== false, callback: function () {
+        scReady = true;
+        applyVolume();
+      }});
     }
 
     if (window.SC && scIframe) {
       scWidget = SC.Widget(scIframe);
       scWidget.bind(SC.Widget.Events.READY, function () {
         scReady = true;
-        startMusic();
+        applyVolume();
+        scWidget.play();
       });
       // Lied wiederholt sich in Dauerschleife, statt am Ende zu stoppen
       scWidget.bind(SC.Widget.Events.FINISH, function () {
@@ -1069,9 +1105,19 @@
       vid.addEventListener('ended', () => { playingVideoCount = Math.max(0, playingVideoCount - 1); applyVolume(); });
     });
 
+    // Bedienleiste: vor/zurück und Stummschaltung
+    document.getElementById('mbPrev').addEventListener('click', () => loadTrack(trackIndex - 1, true));
+    document.getElementById('mbNext').addEventListener('click', () => loadTrack(trackIndex + 1, true));
+    mbMute.addEventListener('click', () => {
+      userMuted = !userMuted;
+      mbMute.textContent = userMuted ? '🔇' : '🔊';
+      applyVolume();
+      if (!userMuted && scReady) scWidget.play();
+    });
+
     // Browser blockieren Autoplay mit Ton oft bis zur ersten Interaktion — dann nachholen
     ['click', 'touchstart', 'scroll'].forEach((evt) => {
-      document.addEventListener(evt, () => { if (scReady) scWidget.play(); }, { once: true, passive: true });
+      document.addEventListener(evt, () => { if (scReady && !userMuted) scWidget.play(); }, { once: true, passive: true });
     });
   })();
 </script>
