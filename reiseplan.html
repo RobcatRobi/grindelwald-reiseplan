@@ -327,6 +327,43 @@
   .steam-emoji:nth-child(2) { animation-delay: 0.8s; }
   .steam-emoji:nth-child(3) { animation-delay: 1.6s; }
 
+  /* PHOTO ALBUM — eingeklebt schräg mit Ecken-Halterungen, Bild animiert diagonal (Ken-Burns) */
+  .album-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 30px 16px; padding: 22px 8px 34px 8px;
+  }
+  @media (max-width: 500px) { .album-grid { grid-template-columns: 1fr; } }
+  .album-grid .wide-a { grid-column: 1 / -1; }
+  .album-photo {
+    background: #fffdf6;
+    padding: 9px 9px 30px 9px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+    transform: rotate(var(--rot, -2deg)) translateY(24px) scale(0.94);
+    opacity: 0;
+    transition: opacity 0.7s ease, transform 0.6s cubic-bezier(.2,.8,.3,1.15);
+    position: relative;
+  }
+  .album-photo.visible { opacity: 1; transform: rotate(var(--rot, -2deg)) translateY(0) scale(1); }
+  .album-photo:hover { transform: rotate(0deg) scale(1.04); z-index: 6; box-shadow: 0 16px 30px rgba(0,0,0,0.35); }
+  .album-photo .kb-frame { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background: #111; }
+  .album-photo.wide-a .kb-frame { aspect-ratio: 16/9; }
+  .album-photo .kb-frame img {
+    position: absolute; top: 50%; left: 50%; width: 138%; height: 138%; object-fit: cover;
+    transform: translate(-50%,-50%) translate(var(--x1,-9%), var(--y1,9%)) scale(1.06);
+    animation: kenburns var(--kb-dur, 15s) ease-in-out infinite alternate;
+  }
+  @keyframes kenburns {
+    0%   { transform: translate(-50%,-50%) translate(var(--x1,-9%), var(--y1,9%)) scale(1.06); }
+    100% { transform: translate(-50%,-50%) translate(var(--x2,9%), var(--y2,-9%)) scale(1.2); }
+  }
+  .album-photo .corner { position: absolute; width: 24px; height: 24px; z-index: 3; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)); }
+  .album-photo .corner.tl { top: 3px; left: 3px; clip-path: polygon(0 0, 100% 0, 0 100%); background: linear-gradient(135deg, #cbb888, #7a6240); }
+  .album-photo .corner.br { bottom: 27px; right: 3px; clip-path: polygon(100% 100%, 0 100%, 100% 0); background: linear-gradient(315deg, #cbb888, #7a6240); }
+  .album-photo .alb-cap {
+    padding: 8px 4px 0 4px; text-align: center; font-size: 13.5px; color: #5c4a35;
+    font-family: 'Brush Script MT', cursive, sans-serif;
+  }
+
   .photo { width: 100%; height: auto; border-radius: 12px; margin-bottom: 4px; display: block; }
   .photo-credit { font-size: 10.5px; color: #999; margin-bottom: 16px; }
 
@@ -363,7 +400,7 @@
     <div class="scroll-cue">⌄</div>
     <button class="sound-toggle" id="soundToggle">🔇 Ton an</button>
   </div>
-  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.8 · Aktualisiert: 08.09.2026 · 15:05</div>
+  <div style="text-align:center; padding:8px 0; background:#faf9f6; font-size:11px; color:#999;">📦 v2.9 · Aktualisiert: 08.09.2026 · 15:40</div>
 
   <div class="joke-banner">
     🃏 Kleiner Insider-Fakt zum Schluss: Es war eine <b>Jassreise</b> — und dabei wurde <u>kein einziges Mal</u> gejasst! 😂 Dafür Salon Rouge, Jungfraujoch, Country Night und First Glider satt.
@@ -579,19 +616,67 @@
   <!-- GALERIE -->
   <div class="section" id="galerie" style="background:#fff;">
     <div class="section-title">📸 Impressionen vom Freitag</div>
-    <div class="gallery-grid">
-      <div class="gallery-item wide"><img src="gallery/gallery-01.jpg" alt="Jolly Roger Bootstour"><div class="cap">Schwimmen unterm Bug der "Jolly Roger" 🚤</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-02.jpg" alt="Auf dem Boot"><div class="cap">Entspannte Fahrt auf dem Brienzersee</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-03.jpg" alt="Jolly Roger am Steg"><div class="cap">Die "Jolly Roger" wartet am Steg</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-04.jpg" alt="Robi entspannt auf dem Boot"><div class="cap">Volle Entspannung an Bord</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-05.jpg" alt="Auf dem Rothorn Kulm"><div class="cap">Oben am Rothorn Kulm — Blick auf den Brienzersee</div></div>
-      <div class="gallery-item wide"><img src="gallery/gallery-06.jpg" alt="Dampflok und Brienzersee"><div class="cap">Dampflok Nr. 5, Baujahr 1891 🚂</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-07.jpg" alt="Lokschild"><div class="cap">Société Suisse, Winterthur 1891 — Geschichte pur</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-08.jpg" alt="Salon Rouge Wappen"><div class="cap">Salon Rouge — seit 1936</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-13.jpg" alt="Dampflok Detail"><div class="cap">Volldampf voraus — Salon Rouge unterwegs 🚂</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-15.jpg" alt="Selfie im See"><div class="cap">Volle Abkühlung im Brienzersee</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-12.jpg" alt="Boot vor Wasserfall"><div class="cap">Vorbei an den Giessbachfällen ⛲</div></div>
-      <div class="gallery-item"><img src="gallery/gallery-20.jpg" alt="Am Steuer"><div class="cap">Volle Konzentration am Steuer</div></div>
+    <div class="album-grid">
+      <div class="album-photo wide-a" style="--rot:-2deg; --x1:-10%; --y1:10%; --x2:10%; --y2:-10%; --kb-dur:17s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-01.jpg" alt="Jolly Roger Bootstour"></div>
+        <div class="alb-cap">Schwimmen unterm Bug der "Jolly Roger" 🚤</div>
+      </div>
+      <div class="album-photo" style="--rot:2deg; --x1:9%; --y1:9%; --x2:-9%; --y2:-9%; --kb-dur:14s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-02.jpg" alt="Auf dem Boot"></div>
+        <div class="alb-cap">Entspannte Fahrt auf dem Brienzersee</div>
+      </div>
+      <div class="album-photo" style="--rot:-3deg; --x1:-8%; --y1:-8%; --x2:8%; --y2:8%; --kb-dur:16s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-03.jpg" alt="Jolly Roger am Steg"></div>
+        <div class="alb-cap">Die "Jolly Roger" wartet am Steg</div>
+      </div>
+      <div class="album-photo" style="--rot:3deg; --x1:0%; --y1:10%; --x2:0%; --y2:-10%; --kb-dur:13s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-04.jpg" alt="Robi entspannt auf dem Boot"></div>
+        <div class="alb-cap">Volle Entspannung an Bord</div>
+      </div>
+      <div class="album-photo" style="--rot:-2deg; --x1:9%; --y1:-9%; --x2:-9%; --y2:9%; --kb-dur:18s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-05.jpg" alt="Auf dem Rothorn Kulm"></div>
+        <div class="alb-cap">Oben am Rothorn Kulm — Blick auf den Brienzersee</div>
+      </div>
+      <div class="album-photo wide-a" style="--rot:1deg; --x1:-10%; --y1:0%; --x2:10%; --y2:0%; --kb-dur:15s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-06.jpg" alt="Dampflok und Brienzersee"></div>
+        <div class="alb-cap">Dampflok Nr. 5, Baujahr 1891 🚂</div>
+      </div>
+      <div class="album-photo" style="--rot:-3deg; --x1:8%; --y1:8%; --x2:-8%; --y2:-8%; --kb-dur:14s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-07.jpg" alt="Lokschild"></div>
+        <div class="alb-cap">Société Suisse, Winterthur 1891 — Geschichte pur</div>
+      </div>
+      <div class="album-photo" style="--rot:2deg; --x1:-9%; --y1:9%; --x2:9%; --y2:-9%; --kb-dur:16s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-08.jpg" alt="Salon Rouge Wappen"></div>
+        <div class="alb-cap">Salon Rouge — seit 1936</div>
+      </div>
+      <div class="album-photo" style="--rot:-2deg; --x1:0%; --y1:-10%; --x2:0%; --y2:10%; --kb-dur:17s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-13.jpg" alt="Dampflok Detail"></div>
+        <div class="alb-cap">Volldampf voraus — Salon Rouge unterwegs 🚂</div>
+      </div>
+      <div class="album-photo" style="--rot:3deg; --x1:9%; --y1:0%; --x2:-9%; --y2:0%; --kb-dur:13s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-15.jpg" alt="Selfie im See"></div>
+        <div class="alb-cap">Volle Abkühlung im Brienzersee</div>
+      </div>
+      <div class="album-photo" style="--rot:-2deg; --x1:-9%; --y1:-9%; --x2:9%; --y2:9%; --kb-dur:15s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-12.jpg" alt="Boot vor Wasserfall"></div>
+        <div class="alb-cap">Vorbei an den Giessbachfällen ⛲</div>
+      </div>
+      <div class="album-photo" style="--rot:2deg; --x1:8%; --y1:-8%; --x2:-8%; --y2:8%; --kb-dur:18s;">
+        <div class="corner tl"></div><div class="corner br"></div>
+        <div class="kb-frame"><img src="gallery/gallery-20.jpg" alt="Am Steuer"></div>
+        <div class="alb-cap">Volle Konzentration am Steuer</div>
+      </div>
     </div>
 
     <div class="section-title" style="margin-top:28px;">🎞️ Salon Rouge — die Bahnfahrt in Bildern</div>
@@ -741,6 +826,16 @@
     });
   }, { threshold: 0.2 });
   document.querySelectorAll('.story-card').forEach(el => storyObserver.observe(el));
+
+  const albumObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 90);
+        albumObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.album-photo').forEach(el => albumObserver.observe(el));
 
   // PWA: Service Worker registrieren, damit die Seite installierbar ist & offline funktioniert
   if ('serviceWorker' in navigator) {
