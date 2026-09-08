@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grindelwald-reiseplan-v3';
+const CACHE_NAME = 'grindelwald-reiseplan-v4';
 const CORE_ASSETS = [
   './reiseplan.html',
   './manifest.json',
